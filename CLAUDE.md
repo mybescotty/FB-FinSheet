@@ -160,6 +160,8 @@ open('template.html','w',errors='replace').write(json.loads(s))"
 2. **History columns overlapping Focus Areas.** These were removed (see the Depot sheet notes above). The Overview's Depot Summary used to require a value in col AC before it would show a line, so a blank cell silently hid that line. It now only needs the period actual.
 3. **Duplicate `getSheetHeaders`.** The second copy was removed.
 
+4. **Detailed P&L row arrows showed as `?`.** The ▸/▾ characters had already been lost in the file as handed over, probably saved in a non-Unicode format at some point. They are now written as HTML entities (`&#9656;` / `&#9662;`), which survive any encoding. **Prefer HTML entities or `\u` escapes for symbols.**
+
 ### Remaining notes
 - `findDepotSheetByName` and the depot picker call `parseDepotSheet` again for every sheet. This is slow with many depots but works correctly.
 
