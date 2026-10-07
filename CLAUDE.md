@@ -70,8 +70,8 @@ Layout of a `Depot-*` sheet (0-indexed columns):
   - `PERIOD_COLS` F–O (5–14): actual, forecast, vs fcst £/%, budget, vs budget £/%, last year, vs LY £/%.
   - `YTD_COLS` Q–Z (16–25): the same ten fields.
   - `FOCUS_AREA_COLS` AB–AE (27–30): current, YTD average, variance £/%. These feed the Overview "Focus Areas" card.
-  - `HISTORY_COLS` AC–AH (28–33): 6 months of prior actuals. **Note: these overlap `FOCUS_AREA_COLS`** (28–30). This looks like it was left behind by a layout change, so check it against the real workbook. History units are auto-detected (×1000 or ÷1000) from the median ratio to the period actual.
-  - The header labels (e.g. "Actuals", "Vs Forecast") are found by scanning rows 1–20 for a cell starting "actual" in col F. The row above that holds "Period 4"/"YTD" and the history month names.
+  - (The old 6-month history columns, `HISTORY_COLS` AC–AH, were removed in Oct 2026. They overlapped `FOCUS_AREA_COLS` and nothing displayed them.)
+  - The header labels (e.g. "Actuals", "Vs Forecast") are found by scanning rows 1–20 for a cell starting "actual" in col F. The row above that holds "Period 4"/"YTD".
   - Tree: built from Excel `outlineLevel`. Outer groups (Revenue/Direct/Semi-Direct/Overheads…) are split on blank rows and named after their last bold row (`isBoldPnlLabel`: starts with "total ", contribution, ebit…).
   - Rows labelled "forecast scenario"/"forecast"/"graph period" are skipped (`PNL_JUNK_LABELS`).
 - **P&L Trend section** (col C = `P&L Trend`) and **KPIs section** (col E = `KPIs`), both read by `parseGroups` (line 736). Each block contains:
@@ -103,8 +103,8 @@ Layout of a `Depot-*` sheet (0-indexed columns):
 ### Payload shape (what the template receives)
 ```
 depotName, period, forecastLabel, currentPeriodWeeks, ytdPriorWeeks,
-pnl[], pnlTree[], pnlNonFinancial[],           // node: {row,code,label,bold,outlineLevel,hidden,period{},ytd{},history[],focusArea{},commentary?,children[]}
-periodHeaders, ytdHeaders, periodLabel, ytdLabel, historyMonths,
+pnl[], pnlTree[], pnlNonFinancial[],           // node: {row,code,label,bold,outlineLevel,hidden,period{},ytd{},focusArea{},commentary?,children[]}
+periodHeaders, ytdHeaders, periodLabel, ytdLabel,
 trend[], kpis[],                                // group: {name, items:[{code,label,actual[12],forecast[12],pyActual[12]}]}
 months, cyMonths, pyMonths,
 riskOpp[], aob[], aobCategories[], guide[], agenda[],
@@ -155,12 +155,13 @@ open('template.html','w',errors='replace').write(json.loads(s))"
 - The code comments are long and record *why* each rule exists (often "confirmed directly with the user"). Read them before changing behaviour.
 - Testing: there are no automated tests. Open the Builder in Edge or Chrome, load a real workbook, generate a dashboard, and click through every page. Check the browser console for errors.
 
-### Known issues found during handover
-1. **Mixed text encoding.** The file is UTF-8 but contains ~30 stray Windows-1252 bytes (`—` 0x97, `£` 0xA3, `–`, `±`). Most sit in comments, but two reach the screen and show as `�`:
-   - P&L Definitions: "Total Operating Costs **–** Continuing Operations"
-   - KPI run-rate text: "P1**–**P4"
+### Fixed during handover (Oct 2026)
+1. **Mixed text encoding.** About 30 stray Windows-1252 bytes were converted to UTF-8. The file is now valid UTF-8 throughout. The two visible symptoms, "Total Operating Costs – Continuing Operations" in P&L Definitions and "P1–P4" in the KPI run-rate text, now display correctly. **Always save the file as UTF-8.**
+2. **History columns overlapping Focus Areas.** These were removed (see the Depot sheet notes above). The Overview's Depot Summary used to require a value in col AC before it would show a line, so a blank cell silently hid that line. It now only needs the period actual.
+3. **Duplicate `getSheetHeaders`.** The second copy was removed.
 
-   Fix by re-saving those characters as UTF-8 or as `–`-style escapes.
-2. `getSheetHeaders` is defined twice (Builder lines 520 and 560). They are identical in effect, so one can be deleted.
-3. `HISTORY_COLS` (28–33) overlaps `FOCUS_AREA_COLS` (27–30). Check which one matches the current workbook. The P&L 6-month history and the Focus Areas figures may be reading the same cells.
-4. `findDepotSheetByName` and the picker call `parseDepotSheet` again for every sheet. This is slow with many depots but works correctly.
+### Remaining notes
+- `findDepotSheetByName` and the depot picker call `parseDepotSheet` again for every sheet. This is slow with many depots but works correctly.
+
+### Testing approach used
+A small made-up workbook was built with openpyxl, using the layout described above. It was loaded into the Builder in headless Chromium with Playwright. Both Generate buttons were clicked, and every dashboard page was opened while checking for JavaScript errors.
