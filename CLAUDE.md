@@ -145,6 +145,7 @@ All charts are drawn by hand on `<canvas>` (`drawLineChart`, `buildWaterfallChar
 | v1.2 | 7 Oct 2026 | YTD commentary hidden; waterfall "Rate" → "Rate incl OT"; P&L Trend page moved after Engineering KPIs |
 | v1.3 | 7 Oct 2026 | Detailed P&L expand/collapse arrows restored |
 | v1.4 | 7 Oct 2026 | Version label in Builder header and dashboard footer |
+| v1.5 | 7 Oct 2026 | Detailed P&L row arrows changed to the larger solid ▶ / ▼ to match the older dashboards |
 
 ## Working on it
 
@@ -172,7 +173,7 @@ open('template.html','w',errors='replace').write(json.loads(s))"
 2. **History columns overlapping Focus Areas.** These were removed (see the Depot sheet notes above). The Overview's Depot Summary used to require a value in col AC before it would show a line, so a blank cell silently hid that line. It now only needs the period actual.
 3. **Duplicate `getSheetHeaders`.** The second copy was removed.
 
-4. **Detailed P&L row arrows showed as `?`.** The ▸/▾ characters had already been lost in the file as handed over, probably saved in a non-Unicode format at some point. They are now written as HTML entities (`&#9656;` / `&#9662;`), which survive any encoding. **Prefer HTML entities or `\u` escapes for symbols.**
+4. **Detailed P&L row arrows showed as `?`.** The ▸/▾ characters had already been lost in the file as handed over, probably saved in a non-Unicode format at some point. They are now written as HTML entities (`&#9654;` ▶ collapsed / `&#9660;` ▼ expanded, since v1.5), which survive any encoding. **Prefer HTML entities or `\u` escapes for symbols.**
 
 ### Remaining notes
 - `findDepotSheetByName` and the depot picker call `parseDepotSheet` again for every sheet. This is slow with many depots but works correctly.
