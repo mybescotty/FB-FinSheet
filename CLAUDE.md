@@ -134,6 +134,18 @@ When decoded, it is ~2,625 lines: CSS (lines 7–386), a small body shell (heade
 
 All charts are drawn by hand on `<canvas>` (`drawLineChart`, `buildWaterfallChart`) with custom tooltips. There is no charting library. Chart colours are constants near line 2515.
 
+## Version history
+
+`BUILDER_VERSION` / `BUILDER_RELEASE_DATE` (top of the Builder logic) are shown in the Builder's header. They are also stamped into every generated dashboard's footer, together with the date and time it was generated (`stampBuildInfo` → `payload.buildInfo` → `showBuildInfo`). **Bump the version and add a line here on every release.** A dashboard with no version in its footer was made by a Builder older than v1.4.
+
+| Version | Date | Changes |
+|---|---|---|
+| v1.0 | — | Version handed over (built in Claude.ai) |
+| v1.1 | 7 Oct 2026 | Text encoding fixed; overlapping history columns removed; duplicate helper removed |
+| v1.2 | 7 Oct 2026 | YTD commentary hidden; waterfall "Rate" → "Rate incl OT"; P&L Trend page moved after Engineering KPIs |
+| v1.3 | 7 Oct 2026 | Detailed P&L expand/collapse arrows restored |
+| v1.4 | 7 Oct 2026 | Version label in Builder header and dashboard footer |
+
 ## Working on it
 
 ### Editing the dashboard template
