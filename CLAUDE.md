@@ -86,7 +86,7 @@ Layout of a `Depot-*` sheet (0-indexed columns):
 ### Driver Cost Waterfall workbook (lines 1159–1298, step 3b)
 - `Depot-*` sheets. Two "staging ranges" (Financials, then Hours) are found by scanning columns T–AO for the text `Forecast`. Each is read down to the row labelled `Actual`.
 - `E7` = period basis (e.g. "YTD").
-- "Scheduling" is renamed to "Scheduling Efficiency".
+- "Scheduling" is renamed to "Scheduling Efficiency", and "Rate" is renamed to "Rate incl OT" (display name requested Oct 2026).
 - `WATERFALL_CALC_GUIDE` holds hover text per bar. **This is hard-coded wording**, so edit it here.
 - The workbook is rejected if no depot has a staging range (protects against someone uploading the main workbook here by mistake).
 
@@ -125,10 +125,10 @@ When decoded, it is ~2,625 lines: CSS (lines 7–386), a small body shell (heade
 | `agenda` | `renderAgenda` | Agenda table |
 | `overview` | `renderOverview` | Narrative "Depot Summary" for the 5 `PNL_GRAND_TOTAL_LINES`. **Focus Areas** card ranks 6 hard-coded cost lines (`PNL_TREND_LINES`) red/amber/green against their YTD average. Also the P&L Definitions card (hard-coded text). |
 | `pnlsummary` | `renderSummaryPnl` | The 8 `SUMMARY_PNL_LINES` |
-| `pnlperiod` / `pnlytd` | `renderDetailedPnl` | Expandable P&L tree. Forecast/Budget/Last Year column groups can be toggled. Commentary appears on hover. Revenue/Direct/Semi-Direct rows are wrapped under their totals for display only (`groupPnlLinesUnderTotals`). |
-| `pnltrend` | `renderPnlTrend` | P1–P12 line charts per trend group (dropdown) |
+| `pnlperiod` / `pnlytd` | `renderDetailedPnl` | Expandable P&L tree. Forecast/Budget/Last Year column groups can be toggled. Commentary appears on hover on the **Period page only**. The YTD page shows no commentary icons, hover or hint (`showCommentary`). Revenue/Direct/Semi-Direct rows are wrapped under their totals for display only (`groupPnlLinesUnderTotals`). |
 | `revenue` / `driver` / `engineering` | `renderKpiPage` | KPI picker, a CY vs LY vs Forecast chart, run-rate text, and the Guide text (`KPI_PAGE_META`) |
 | `waterfall` | `renderWaterfall` | Two canvas waterfall charts (£'000 and hours) with hover text |
+| `pnltrend` | `renderPnlTrend` | P1–P12 line charts per trend group (dropdown). Placed after Engineering KPIs and before AOB since Oct 2026. |
 | `aob` | `renderAob` | One card per AOB category |
 | `risks` | `renderRisks` | Risk/Focus cards |
 
